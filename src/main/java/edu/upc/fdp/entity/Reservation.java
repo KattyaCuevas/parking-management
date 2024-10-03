@@ -1,5 +1,6 @@
 package edu.upc.fdp.entity;
 
+import edu.upc.fdp.VehicleType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -20,4 +21,15 @@ public class Reservation {
     private LocalDate date;
 
     private int level;
+    private VehicleType vehicleType;
+
+    // Método para verificar si es una reserva futura
+    public boolean isFutureReservation() {
+        return date.isAfter(LocalDate.now()) || (date.isEqual(LocalDate.now()) && startTime.isAfter(LocalTime.now()));
+    }
+
+    @Override
+    public String toString() {
+        return "Reserva: " + vehicleType + " | Matrícula: " + licensePlate + " | Fecha: " + date + " | Hora de inicio: " + startTime + " | Hora de fin: " + endTime + " | Nivel: " + level;
+    }
 }
