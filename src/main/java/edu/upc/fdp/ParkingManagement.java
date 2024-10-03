@@ -51,13 +51,17 @@ public class ParkingManagement {
 
         boolean exit = false;
         while (!exit) {
-            System.out.println("\nSeleccione una opción:");
+            System.out.println("===================================");
+            System.out.println("          MENÚ PRINCIPAL          ");
+            System.out.println("===================================");
             System.out.println("1. Registrar nueva reserva");
             System.out.println("2. Mostrar reservas futuras");
             System.out.println("3. Mostrar franjas horarias libres y ocupadas");
             System.out.println("4. Mostrar reservas activas (ahora mismo)");
-            System.out.println("5. Salir");
-
+            System.out.println("5. Cancelar reserva");
+            System.out.println("6. Salir");
+            System.out.println("===================================");
+            System.out.print("Seleccione una opción:");
             String option = scanner.nextLine();
 
             switch (option) {
@@ -74,6 +78,9 @@ public class ParkingManagement {
                     showCurrentReservations();
                     break;
                 case "5":
+                    cancelReservation();
+                    break;
+                case "6":
                     exit = true;
                     break;
                 default:
@@ -307,4 +314,31 @@ public class ParkingManagement {
             throw new IllegalArgumentException("Error: Formato de hora no válido. Use el formato HH:mm.");
         }
     }
+    // Método para cancelar una reserva
+    public void cancelReservation() {
+        try {
+            System.out.print("Por favor, introduzca la matrícula del vehículo correspondiente a la reserva que desea cancelar: ");
+            String LicensePlateCode = scanner.nextLine().trim();
+
+            // Buscar la reserva en la lista de reservas
+            Reservation reservationToCancel = null;
+            for (Reservation reservation : reservations) {
+                if (reservation.getLicensePlate().equals(LicensePlateCode)) {
+                    reservationToCancel = reservation;
+                    break;
+                }
+            }
+
+            // Verificar si se encontró la reserva
+            if (reservationToCancel != null) {
+                reservations.remove(reservationToCancel);
+                System.out.println("Reserva cancelada exitosamente: " + reservationToCancel);
+            } else {
+                System.out.println("Error: No se encontró una reserva con el código proporcionado.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al cancelar la reserva: " + e.getMessage());
+        }
+    }
+
 }
