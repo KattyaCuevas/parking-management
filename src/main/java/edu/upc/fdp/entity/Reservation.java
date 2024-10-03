@@ -9,6 +9,8 @@ import java.time.LocalTime;
 @Data
 @Builder
 public class Reservation {
+    private String generatedCode;
+    
     private String licensePlate;
 
     private LocalTime startTime;
