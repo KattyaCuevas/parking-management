@@ -10,10 +10,12 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ParkingManagement {
     private List<Reservation> reservations = new ArrayList<>();
+    private List<Employee> employees = new ArrayList<>();
     private static final Scanner scanner = new Scanner(System.in);
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -84,20 +86,72 @@ public class ParkingManagement {
     // Método para registrar una nueva reserva
     public void registerNewReservation() {
         try {
+            System.out.print("Ingrese su DNI: ");
+            String dni = scanner.nextLine().trim();
+
+            System.out.print("Ingrese su nombre: ");
+            String name = scanner.nextLine().trim();
+
+            System.out.print("Ingrese el nombre su empresa: ");
+            String companyName = scanner.nextLine().trim();
+
             System.out.println("Ingrese la matrícula del vehículo:");
             String licensePlate = scanner.nextLine().trim();
 
             System.out.println("Ingrese el tipo de vehículo (CAR, MOTORCYCLE, TRUCK):");
             VehicleType vehicleType = VehicleType.fromString(scanner.nextLine().trim());
 
-            System.out.println("Ingrese la fecha de la reserva (formato: yyyy-MM-dd):");
-            LocalDate date = parseDate(scanner.nextLine().trim());
+            boolean error = true;
 
-            System.out.println("Ingrese la hora de inicio (formato: HH:mm):");
-            LocalTime startTime = parseTime(scanner.nextLine().trim());
+            LocalDate date = LocalDate.now();
+            while(error) {
+                System.out.println("Ingrese la fecha de su reserva(DD/MM/YYY): ");
+                String dateString = scanner.nextLine();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                try {
+                    date = LocalDate.parse(dateString, formatter);
+                    error = false;
+                } catch (DateTimeParseException e) {
+                    System.out.println("La fecha ingresada no tiene el formato correcto(DD/MM/YYY)");
+                    System.out.print("¿Dese volver a intentarlo(Y/n)?" );
+                    String respuesta = scanner.nextLine();
+                    if(respuesta.equalsIgnoreCase("N")) return;
+                }
+            }
 
-            System.out.println("Ingrese la hora de fin (formato: HH:mm):");
-            LocalTime endTime = parseTime(scanner.nextLine().trim());
+            error = true;
+            LocalTime startTime = LocalTime.now();
+            while(error) {
+                System.out.println("Ingrese la hora de inicio de su reserva(hh:mm): ");
+                String startTimeString = scanner.nextLine();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                try {
+                    startTime = LocalTime.parse(startTimeString, formatter);
+                    error = false;
+                } catch (DateTimeParseException e) {
+                    System.out.println("La hora ingresada no tiene el formato correcto(hh:mm)");
+                    System.out.print("¿Dese volver a intentarlo(Y/n)?" );
+                    String respuesta = scanner.nextLine();
+                    if(respuesta.equalsIgnoreCase("N")) return;
+                }
+            }
+
+            error = true;
+            LocalTime endTime = LocalTime.now();
+            while(error) {
+                System.out.println("Ingrese la hora de finalización de su reserva(hh:mm): ");
+                String endTimeString = scanner.nextLine();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                try {
+                    endTime = LocalTime.parse(endTimeString, formatter);
+                    error = false;
+                } catch (DateTimeParseException e) {
+                    System.out.println("La hora ingresada no tiene el formato correcto(hh:mm)");
+                    System.out.print("¿Dese volver a intentarlo(Y/n)?" );
+                    String respuesta = scanner.nextLine();
+                    if(respuesta.equalsIgnoreCase("N")) return;
+                }
+            }
 
             if (startTime.isAfter(endTime)) {
                 System.out.println("Error: La hora de inicio no puede ser posterior a la hora de fin.");
@@ -107,7 +161,19 @@ public class ParkingManagement {
             System.out.println("Ingrese el nivel del estacionamiento:");
             int level = Integer.parseInt(scanner.nextLine().trim());
 
+            Employee newEmployee = Employee.builder()
+                    .dni(dni)
+                    .name(name)
+                    .companyName(companyName)
+                    .licensePlate(licensePlate)
+                    .build();
+
+            if(validateEmployee(newEmployee)) {
+                employees.add(newEmployee);
+            }
+
             Reservation newReservation = Reservation.builder()
+                    .generatedCode(UUID.randomUUID().toString())
                     .licensePlate(licensePlate)
                     .vehicleType(vehicleType)
                     .date(date)
@@ -141,6 +207,16 @@ public class ParkingManagement {
                     System.out.println("Error: Conflicto de horarios con la reserva: " + existingReservation);
                     return false;
                 }
+            }
+        }
+        return true;
+    }
+
+    public boolean validateEmployee(Employee newEmployee) {
+        for (Employee employee : employees) {
+            if(employee.getDni().equals(newEmployee.getDni()) &&
+                    employee.getLicensePlate().equals(newEmployee.getLicensePlate())) {
+                return false;
             }
         }
         return true;

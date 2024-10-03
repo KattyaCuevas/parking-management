@@ -30,6 +30,6 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return "Reserva: " + vehicleType + " | Matrícula: " + licensePlate + " | Fecha: " + date + " | Hora de inicio: " + startTime + " | Hora de fin: " + endTime + " | Nivel: " + level;
+        return "Reserva: " + generatedCode + " | Tipo de vehículo: " + vehicleType + " | Matrícula: " + licensePlate + " | Fecha: " + date + " | Hora de inicio: " + startTime + " | Hora de fin: " + endTime + " | Nivel: " + level;
     }
 }

@@ -6,6 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class Employee {
+    private String dni;
+
     private String name;
 
     private String companyName;
